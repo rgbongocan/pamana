@@ -1,0 +1,7 @@
+*.csv
+*.kml
+*.kmz
+*.parquet
+*.swp
+.ipynb_checkpoints/*
+.node_modules/*
