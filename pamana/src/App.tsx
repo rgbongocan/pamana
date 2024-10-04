@@ -1,33 +1,21 @@
 import './App.css'
 import { Map } from 'react-map-gl/maplibre'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { DeckGL } from 'deck.gl'
+import { DeckGL, Layer } from 'deck.gl'
 // @ts-ignore
 import { initialState as initialViewState } from "./store/viewStateSlice"
 import { useMapHooks } from "./utils/useMapHooks"
 import DummyH3Layer from "./layers/DummyH3Layer"
-import { initializeDuckDb, getDuckDB } from "duckdb-wasm-kit"
 import { useAsync } from "react-async-hook"
-import SlippyTileLayer from "./layers/SlippyTileLayer"
+import TileBoundariesLayer from "./layers/SlippyTileLayer"
+import preloadDuckDB from './utils/preloadDuckDB'
 
 
 const App = () => {
-  const { result, loading: dbInitializing, error} = useAsync(async () => {
-    await initializeDuckDb({ config: { allowUnsignedExtensions: true }, debug: false });
-    const db = await getDuckDB();
-    if (db) {
-      const conn = await db.connect();
-      await conn.query(`INSTALL spatial`);
-      await conn.query(`LOAD spatial`);
-      await conn.query(`SET custom_extension_repository='https://pub-cc26a6fd5d8240078bd0c2e0623393a5.r2.dev';`);
-      await conn.query(`INSTALL h3;`)
-      await conn.query(`LOAD h3;`);
-    }
-  }, []);
-
-  const layers: any[] = [
-    SlippyTileLayer(),
+  const { loading: dbInitializing, error } = useAsync(preloadDuckDB, []);
+  const layers: Layer[] = [
     DummyH3Layer(),
+    TileBoundariesLayer(),
   ];
   const { debouncedHandleViewStateChange } = useMapHooks();
   return (

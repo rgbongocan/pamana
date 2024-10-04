@@ -1,7 +1,7 @@
 import { PolygonLayer, TextLayer, TileLayer } from "deck.gl";
 
-const SlippyTileLayer = () => new TileLayer({
-  id: 'slippy-tile-layer',
+const TileBoundariesLayer = () => new TileLayer({
+  id: 'tile-boundaries-layer',
   data: null,
   pickable: false,
   // maxZoom: steppedZoom,
@@ -59,4 +59,4 @@ const SlippyTileLayer = () => new TileLayer({
   ],
 });
 
-export default SlippyTileLayer;
+export default TileBoundariesLayer;
