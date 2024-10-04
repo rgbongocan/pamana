@@ -3,6 +3,7 @@ import { hexToRgb } from "../utils/colors";
 import getDuckDB from "../utils/duckdb";
 import * as arrow from 'apache-arrow';
 import { useDuckDb, useDuckDbQuery } from "duckdb-wasm-kit";
+import getSteppedZoomResolutionPair from "../utils/getSteppedResolutionZoomPair";
 
 // const getTileData = async (tile) => {
 //   const { db } = useDuckDb();
@@ -48,17 +49,12 @@ const DummyH3Layer = () => {
   return new TileLayer({
     id: 'h3-tile-layer',
     getTileData: async (tile) => {
-      // await foo();
       const { z, x, y } = tile.index;
+      const resolution = getSteppedZoomResolutionPair(tile.index.z)[1]
       const { east, north, south, west } = tile.bbox;
       console.info(east, north, south, west);
       const db = await getDuckDB();
       const conn = await db.connect();
-      // const stmt = await conn.prepare(
-      //   `
-      //   SELECT ST_GeomFromText('POLYGON($1 $2, $1 $3, $4 $3, $4 $2, $1 $2)')
-      //   `
-      // );
       const stmt = await conn.prepare(`
         SELECT
           h3_h3_to_string(
@@ -72,11 +68,11 @@ const DummyH3Layer = () => {
                   ST_Point($2, $1),
                 ]))
               ),
-              4
+              CAST($5 AS INTEGER)
             ))
           ) h3;
       `);
-      const res = await stmt.query(north, east, west, south);
+      const res = await stmt.query(north, east, west, south, resolution);
       let rows = res.toArray().map((row) => row.toJSON());
       rows.columns = res.schema.fields.map((d) => d.name);
       const h3 = rows.map((r) => r.h3);
@@ -96,7 +92,8 @@ const DummyH3Layer = () => {
         stroked: true,
         lineWidthMinPixels: 1,
         getLineColor: [...hexToRgb('#1e88e5'), 120],
-        getFillColor: [...hexToRgb('#1e88e5'), 160],
+        getFillColor: [...hexToRgb('#1e88e5'), 40],
+        // getFillColor: [...hexToRgb('#1e88e5'), 160],
         filled: true,
         extruded: false,
       })
