@@ -19,6 +19,8 @@ import DummyH3Layer from "./layers/DummyH3Layer"
 import { DuckDBConfig } from "@duckdb/duckdb-wasm"
 // import { initializeDuckDb, useDuckDbQuery } from "duckdb-wasm-kit"
 import initDB from "./utils/duckdb"
+// import getDuckDB from "./utils/duckdb"
+import { initializeDuckDb, useDuckDb, getDuckDB } from "duckdb-wasm-kit"
 
 
 const getSlippyLayer = () => {
@@ -84,31 +86,23 @@ const getSlippyLayer = () => {
 
 
 const App = () => {
+  const initDb = async () => {
+    await initializeDuckDb({ config: { allowUnsignedExtensions: true, allow_unsigned_extensions: true }, debug: true });
+    const db = await getDuckDB();
+    if (db) {
+      const conn = await db.connect();
+      console.info('installing stuff');
+      await conn.query(`INSTALL spatial`);
+      await conn.query(`LOAD spatial`);
+      await conn.query(`SET custom_extension_repository='https://pub-cc26a6fd5d8240078bd0c2e0623393a5.r2.dev';`);
+      await conn.query(`INSTALL h3;`)
+      await conn.query(`LOAD h3;`);
+    }
+  };
+
   useEffect(() => {
-    initDB();
+    initDb();
   }, []);
-  // useEffect(() => {
-  //   const config: DuckDBConfig = {
-  //     // @ts-ignore
-  //     allowUnsignedExtensions: true,
-  //   }
-  //   initializeDuckDb({ debug: true, config });
-  // }, []);
-
-  // useDuckDbQuery(`
-  //   INSTALL spatial;
-  //   LOAD spatial;
-  // `);
-
-  // useDuckDbQuery(`
-  //   SET custom_extension_repository='https://storage.googleapis.com/duckdb-extensions';
-  //   INSTALL h3ext;
-  //   LOAD h3ext;
-  // `)
-  useEffect(() => {
-    initDB();
-  }, []);
-
   const layers: any[] = [
     getSlippyLayer(),
     DummyH3Layer(),
