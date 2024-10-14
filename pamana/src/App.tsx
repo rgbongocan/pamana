@@ -1,40 +1,35 @@
-import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
 import './App.css'
-// import { DeckGL } from 'deck.gl';
-import { DeckProps } from '@deck.gl/core';
-import { MapboxOverlay } from '@deck.gl/mapbox';
-import { Map, useControl } from 'react-map-gl/maplibre';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import { DeckGL } from 'deck.gl';
+import { Map } from 'react-map-gl/maplibre'
+import 'maplibre-gl/dist/maplibre-gl.css'
+import { DeckGL, Layer } from 'deck.gl'
+// @ts-ignore
+import { initialState as initialViewState } from "./store/viewStateSlice"
+import { useMapHooks } from "./utils/useMapHooks"
+import DummyH3Layer from "./layers/DummyH3Layer"
+import { useAsync } from "react-async-hook"
+import TileBoundariesLayer from "./layers/SlippyTileLayer"
+import preloadDuckDB from './utils/preloadDuckDB'
 
-// const DeckGLOverlay = (props: DeckProps) => {
-//   const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
-//   overlay.setProps(props);
-//   return null;
-// }
-
-const STADIA_API_KEY = "c81c2124-dce0-44b3-ac15-2f2e4a9559d2";
 
 const App = () => {
-  // const [count, setCount] = useState(0)
-  const layers: any = [];
-
+  const { loading: dbInitializing, error } = useAsync(preloadDuckDB, []);
+  const layers: Layer[] = [
+    DummyH3Layer(),
+    TileBoundariesLayer(),
+  ];
+  const { debouncedHandleViewStateChange } = useMapHooks();
   return (
-    <DeckGL
-     initialViewState={{
-        longitude: 0.45,
-        latitude: 51.47,
-        zoom: 11
-      }}
-      controller
-      layers={layers}
-    >
-      <Map mapStyle="https://tiles.stadiamaps.com/styles/stamen_toner_lite.json" />
-    </DeckGL>
-
+    !dbInitializing ?
+      <DeckGL
+        initialViewState={initialViewState}
+        controller
+        layers={layers}
+        onViewStateChange={debouncedHandleViewStateChange}
+      >
+        <Map mapStyle="https://tiles.stadiamaps.com/styles/stamen_toner_lite.json" />
+      </DeckGL> :
+      null
   )
 }
 
-export default App
+export default App;

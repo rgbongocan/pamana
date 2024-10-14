@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "pamana"
+version = "0.1.0"
+description = ""
+authors = ["Renzo Gabriel Bongocan <gabrielbongocan@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+jupyter = "^1.1.1"
+folium = "^0.17.0"
+geopandas = "^1.0.1"
+fiona = "^1.10.1"
+pykml = "^0.2.0"
+fastparquet = "^2024.5.0"
+pyarrow = "^17.0.0"
+
+[tool.poetry.group.dev.dependencies]
+fastkml = "^0.12"
+duckdb = "^1.1.0"
+jupyter = "^1.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
