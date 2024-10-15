@@ -13,9 +13,10 @@ import preloadDuckDB from './utils/preloadDuckDB'
 
 const App = () => {
   const { loading: dbInitializing, error } = useAsync(preloadDuckDB, []);
+  console.error(error);
   const layers: Layer[] = [
     DummyH3Layer(),
-    TileBoundariesLayer(),
+    // TileBoundariesLayer(),
   ];
   const { debouncedHandleViewStateChange } = useMapHooks();
   return (
