@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux"
-import { updateViewState } from "../store/viewStateSlice";
+// import { updateViewState } from "../store/viewStateSlice";
 import debounce from "./debounce";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -7,9 +7,9 @@ export const useMapHooks = () => {
   const dispatch = useDispatch();
   let isHovering = false;
 
-  const handleViewStateChange = ({ viewState }: { viewState: any }) => {
-    dispatch(updateViewState(viewState));
-  }
+  // const handleViewStateChange = ({ viewState }: { viewState: any }) => {
+  //   dispatch(updateViewState(viewState));
+  // }
 
   const handleHover = ({ object }: any) => (isHovering = !!object);
   const handleCursor = ({ isDragging }: { isDragging: boolean }) =>
@@ -36,13 +36,13 @@ export const useMapHooks = () => {
     return null;
   };
 
-  const debouncedHandleViewStateChange = debounce(handleViewStateChange, 200);
+  // const debouncedHandleViewStateChange = debounce(handleViewStateChange, 200);
 
   return {
-    handleViewStateChange,
+    // handleViewStateChange,
     handleHover,
     handleCursor,
     handleTooltip,
-    debouncedHandleViewStateChange
+    // debouncedHandleViewStateChange
   };
 }
