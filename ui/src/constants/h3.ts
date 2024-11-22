@@ -10,6 +10,7 @@ export const ZOOM_H3_RESOLUTION_PAIRS: [number, number][] = [
   [10, 6],
   [11, 7],
   [12, 8],
+  [13, 9],
 ];
 
 export const MINIMUM_ZOOM = Math.min(ZOOM_H3_RESOLUTION_PAIRS[0][0], 1);
